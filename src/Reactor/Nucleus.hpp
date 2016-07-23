@@ -2434,6 +2434,23 @@ namespace sw
         static llvm::Type *getType();
     };
 
+    RValue<Double> operator+(RValue<Double> lhs, RValue<Double> rhs);
+    RValue<Double> operator-(RValue<Double> lhs, RValue<Double> rhs);
+    RValue<Double> operator*(RValue<Double> lhs, RValue<Double> rhs);
+    RValue<Double> operator/(RValue<Double> lhs, RValue<Double> rhs);
+    RValue<Double> operator+=(const Double &lhs, RValue<Double> rhs);
+    RValue<Double> operator-=(const Double &lhs, RValue<Double> rhs);
+    RValue<Double> operator*=(const Double &lhs, RValue<Double> rhs);
+    RValue<Double> operator/=(const Double &lhs, RValue<Double> rhs);
+    RValue<Double> operator+(RValue<Double> val);
+    RValue<Double> operator-(RValue<Double> val);
+    RValue<Bool> operator<(RValue<Double> lhs, RValue<Double> rhs);
+    RValue<Bool> operator<=(RValue<Double> lhs, RValue<Double> rhs);
+    RValue<Bool> operator>(RValue<Double> lhs, RValue<Double> rhs);
+    RValue<Bool> operator>=(RValue<Double> lhs, RValue<Double> rhs);
+    RValue<Bool> operator!=(RValue<Double> lhs, RValue<Double> rhs);
+    RValue<Bool> operator==(RValue<Double> lhs, RValue<Double> rhs);
+
 	template<class T>
 	class Pointer : public Variable<Pointer<T>>
 	{

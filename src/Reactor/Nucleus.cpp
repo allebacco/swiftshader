@@ -6920,6 +6920,86 @@ namespace sw
         return Type::getDoubleTy(*Nucleus::getContext());
     }
 
+    RValue<Double> operator+(RValue<Double> lhs, RValue<Double> rhs)
+    {
+        return RValue<Double>(Nucleus::createFAdd(lhs.value, rhs.value));
+    }
+
+    RValue<Double> operator-(RValue<Double> lhs, RValue<Double> rhs)
+    {
+        return RValue<Double>(Nucleus::createFSub(lhs.value, rhs.value));
+    }
+
+    RValue<Double> operator*(RValue<Double> lhs, RValue<Double> rhs)
+    {
+        return RValue<Double>(Nucleus::createFMul(lhs.value, rhs.value));
+    }
+
+    RValue<Double> operator/(RValue<Double> lhs, RValue<Double> rhs)
+    {
+        return RValue<Double>(Nucleus::createFDiv(lhs.value, rhs.value));
+    }
+
+    RValue<Double> operator+=(const Double &lhs, RValue<Double> rhs)
+    {
+        return lhs = lhs + rhs;
+    }
+
+    RValue<Double> operator-=(const Double &lhs, RValue<Double> rhs)
+    {
+        return lhs = lhs - rhs;
+    }
+
+    RValue<Double> operator*=(const Double &lhs, RValue<Double> rhs)
+    {
+        return lhs = lhs * rhs;
+    }
+
+    RValue<Double> operator/=(const Double &lhs, RValue<Double> rhs)
+    {
+        return lhs = lhs / rhs;
+    }
+
+    RValue<Double> operator+(RValue<Double> val)
+    {
+        return val;
+    }
+
+    RValue<Double> operator-(RValue<Double> val)
+    {
+        return RValue<Double>(Nucleus::createFNeg(val.value));
+    }
+
+    RValue<Bool> operator<(RValue<Double> lhs, RValue<Double> rhs)
+    {
+        return RValue<Bool>(Nucleus::createFCmpOLT(lhs.value, rhs.value));
+    }
+
+    RValue<Bool> operator<=(RValue<Double> lhs, RValue<Double> rhs)
+    {
+        return RValue<Bool>(Nucleus::createFCmpOLE(lhs.value, rhs.value));
+    }
+
+    RValue<Bool> operator>(RValue<Double> lhs, RValue<Double> rhs)
+    {
+        return RValue<Bool>(Nucleus::createFCmpOGT(lhs.value, rhs.value));
+    }
+
+    RValue<Bool> operator>=(RValue<Double> lhs, RValue<Double> rhs)
+    {
+        return RValue<Bool>(Nucleus::createFCmpOGE(lhs.value, rhs.value));
+    }
+
+    RValue<Bool> operator!=(RValue<Double> lhs, RValue<Double> rhs)
+    {
+        return RValue<Bool>(Nucleus::createFCmpONE(lhs.value, rhs.value));
+    }
+
+    RValue<Bool> operator==(RValue<Double> lhs, RValue<Double> rhs)
+    {
+        return RValue<Bool>(Nucleus::createFCmpOEQ(lhs.value, rhs.value));
+    }
+
 	RValue<Pointer<Byte>> operator+(RValue<Pointer<Byte>> lhs, int offset)
 	{
 		return RValue<Pointer<Byte>>(Nucleus::createGEP(lhs.value, Nucleus::createConstantInt(offset)));
