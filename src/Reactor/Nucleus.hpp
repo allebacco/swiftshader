@@ -2540,6 +2540,7 @@ namespace sw
 	void Return();
 	void Return(bool ret);
 	void Return(const Int &ret);
+    void Return(const Double &ret);
 
 	template<class T>
 	void Return(const Pointer<T> &ret);

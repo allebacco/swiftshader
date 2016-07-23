@@ -7181,6 +7181,13 @@ namespace sw
 		Nucleus::createUnreachable();
 	}
 
+    void Return(const Double &ret)
+    {
+        Nucleus::createRet(ret.loadValue());
+        Nucleus::setInsertBlock(Nucleus::createBasicBlock());
+        Nucleus::createUnreachable();
+    }
+
 	BasicBlock *beginLoop()
 	{
 		BasicBlock *loopBB = Nucleus::createBasicBlock();
