@@ -811,6 +811,11 @@ namespace sw
 		return ConstantFP::get(Float::getType(), x);
 	}
 
+    llvm::Constant *Nucleus::createConstantDouble(double x)
+    {
+        return ConstantFP::get(Double::getType(), x);
+    }
+
 	llvm::Value *Nucleus::createNullPointer(llvm::Type *Ty)
 	{
 		return llvm::ConstantPointerNull::get(llvm::PointerType::get(Ty, 0));
@@ -6847,6 +6852,73 @@ namespace sw
 	{
 		return VectorType::get(Float::getType(), 4);
 	}
+
+    Double::Double(RValue<Long> cast)
+    {
+        Value *integer = Nucleus::createSIToFP(cast.value, Double::getType());
+
+        storeValue(integer);
+    }
+
+    Double::Double(Argument<Double> argument)
+    {
+        storeValue(argument.value);
+    }
+
+    Double::Double()
+    {
+
+    }
+
+    Double::Double(double x)
+    {
+        storeValue(Nucleus::createConstantDouble(x));
+    }
+
+    Double::Double(RValue<Double> rhs)
+    {
+        storeValue(rhs.value);
+    }
+
+    Double::Double(const Double &rhs)
+    {
+        Value *value = rhs.loadValue();
+        storeValue(value);
+    }
+
+    Double::Double(const Reference<Double> &rhs)
+    {
+        Value *value = rhs.loadValue();
+        storeValue(value);
+    }
+
+    RValue<Double> Double::operator=(RValue<Double> rhs) const
+    {
+        storeValue(rhs.value);
+
+        return rhs;
+    }
+
+    RValue<Double> Double::operator=(const Double &rhs) const
+    {
+        Value *value = rhs.loadValue();
+        storeValue(value);
+
+        return RValue<Double>(value);
+    }
+
+    RValue<Double> Double::operator=(const Reference<Double> &rhs) const
+    {
+        Value *value = rhs.loadValue();
+        storeValue(value);
+
+        return RValue<Double>(value);
+    }
+
+    Type *Double::getType()
+    {
+        return Type::getDoubleTy(*Nucleus::getContext());
+    }
 
 	RValue<Pointer<Byte>> operator+(RValue<Pointer<Byte>> lhs, int offset)
 	{

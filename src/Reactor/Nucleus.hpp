@@ -210,6 +210,7 @@ namespace sw
 		static llvm::ConstantInt *createConstantShort(short i);
 		static llvm::ConstantInt *createConstantShort(unsigned short i);
 		static llvm::Constant *createConstantFloat(float x);
+        static llvm::Constant *createConstantDouble(double x);
 		static llvm::Value *createNullPointer(llvm::Type *Ty);
 		static llvm::Value *createConstantVector(llvm::Constant *const *Vals, unsigned NumVals);
 
@@ -252,6 +253,7 @@ namespace sw
 	class Float;
 	class Float2;
 	class Float4;
+    class Double;
 
 	class Void
 	{
@@ -2404,6 +2406,33 @@ namespace sw
 	RValue<Float4> Frac(RValue<Float4> x);
 	RValue<Float4> Floor(RValue<Float4> x);
 	RValue<Float4> Ceil(RValue<Float4> x);
+
+    class Double : public Variable<Double>
+    {
+    public:
+        explicit Double(RValue<Long> cast);
+
+        Double(Argument<Double> argument);
+
+        Double();
+        Double(double x);
+        Double(RValue<Double> rhs);
+        Double(const Double &rhs);
+        Double(const Reference<Double> &rhs);
+
+        //template<int T>
+        //Float(const SwizzleMask1Float4<T> &rhs);
+
+    //	RValue<Double> operator=(float rhs) const;   // FIXME: Implement
+        RValue<Double> operator=(RValue<Double> rhs) const;
+        RValue<Double> operator=(const Double &rhs) const;
+        RValue<Double> operator=(const Reference<Double> &rhs) const;
+
+        //template<int T>
+        //RValue<Float> operator=(const SwizzleMask1Float4<T> &rhs) const;
+
+        static llvm::Type *getType();
+    };
 
 	template<class T>
 	class Pointer : public Variable<Pointer<T>>
