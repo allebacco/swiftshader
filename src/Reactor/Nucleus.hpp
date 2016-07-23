@@ -2451,6 +2451,18 @@ namespace sw
     RValue<Bool> operator!=(RValue<Double> lhs, RValue<Double> rhs);
     RValue<Bool> operator==(RValue<Double> lhs, RValue<Double> rhs);
 
+    RValue<Double> Abs(RValue<Double> x);
+    RValue<Double> Max(RValue<Double> x, RValue<Double> y);
+    RValue<Double> Min(RValue<Double> x, RValue<Double> y);
+    //RValue<Double> Rcp_pp(RValue<Double> val, bool exactAtPow2 = false);
+    //RValue<Double> RcpSqrt_pp(RValue<Double> val);
+    //RValue<Double> Sqrt(RValue<Double> x);
+    //RValue<Double> Round(RValue<Double> val);
+    //RValue<Double> Trunc(RValue<Double> val);
+    //RValue<Double> Frac(RValue<Double> val);
+    //RValue<Double> Floor(RValue<Double> val);
+    //RValue<Double> Ceil(RValue<Double> val);
+
 	template<class T>
 	class Pointer : public Variable<Pointer<T>>
 	{

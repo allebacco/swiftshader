@@ -7000,6 +7000,106 @@ namespace sw
         return RValue<Bool>(Nucleus::createFCmpOEQ(lhs.value, rhs.value));
     }
 
+    RValue<Double> Abs(RValue<Double> x)
+    {
+        return IfThenElse(x > Double(0.0), x, -x);
+    }
+
+    RValue<Double> Max(RValue<Double> x, RValue<Double> y)
+    {
+        return IfThenElse(x > y, x, y);
+    }
+
+    RValue<Double> Min(RValue<Double> x, RValue<Double> y)
+    {
+        return IfThenElse(x < y, x, y);
+    }
+
+    /*RValue<Float> Rcp_pp(RValue<Float> x, bool exactAtPow2)
+    {
+        if(exactAtPow2)
+        {
+            // rcpss uses a piecewise-linear approximation which minimizes the relative error
+            // but is not exact at power-of-two values. Rectify by multiplying by the inverse.
+            return x86::rcpss(x) * Float(1.0f / _mm_cvtss_f32(_mm_rcp_ss(_mm_set_ps1(1.0f))));
+        }
+        else
+        {
+            return x86::rcpss(x);
+        }
+    }
+
+    RValue<Float> RcpSqrt_pp(RValue<Float> x)
+    {
+        return x86::rsqrtss(x);
+    }
+
+    RValue<Float> Sqrt(RValue<Float> x)
+    {
+        return x86::sqrtss(x);
+    }
+
+    RValue<Float> Round(RValue<Float> x)
+    {
+        if(CPUID::supportsSSE4_1())
+        {
+            return x86::roundss(x, 0);
+        }
+        else
+        {
+            return Float4(Round(Float4(x))).x;
+        }
+    }
+
+    RValue<Float> Trunc(RValue<Float> x)
+    {
+        if(CPUID::supportsSSE4_1())
+        {
+            return x86::roundss(x, 3);
+        }
+        else
+        {
+            return Float(Int(x));   // Rounded toward zero
+        }
+    }
+
+    RValue<Float> Frac(RValue<Float> x)
+    {
+        if(CPUID::supportsSSE4_1())
+        {
+            return x - x86::floorss(x);
+        }
+        else
+        {
+            return Float4(Frac(Float4(x))).x;
+        }
+    }
+
+    RValue<Float> Floor(RValue<Float> x)
+    {
+        if(CPUID::supportsSSE4_1())
+        {
+            return x86::floorss(x);
+        }
+        else
+        {
+            return Float4(Floor(Float4(x))).x;
+        }
+    }
+
+    RValue<Float> Ceil(RValue<Float> x)
+    {
+        if(CPUID::supportsSSE4_1())
+        {
+            return x86::ceilss(x);
+        }
+        else
+        {
+            return Float4(Ceil(Float4(x))).x;
+        }
+    }*/
+
+
 	RValue<Pointer<Byte>> operator+(RValue<Pointer<Byte>> lhs, int offset)
 	{
 		return RValue<Pointer<Byte>>(Nucleus::createGEP(lhs.value, Nucleus::createConstantInt(offset)));
