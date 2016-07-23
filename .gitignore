@@ -2,6 +2,7 @@
 /lib/
 /obj/
 /bin/
+/build/
 
 # Ignored files #
 *.obj
@@ -23,3 +24,4 @@
 *.layout
 *.opensdf
 *.aps
+*.user
