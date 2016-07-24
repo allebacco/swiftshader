@@ -23,6 +23,8 @@ namespace sw
 		RValue<Int2> cvttps2pi(RValue<Float4> val);
 		RValue<Int4> cvtps2dq(RValue<Float4> val);
 
+        RValue<Int> cvtsd2si(RValue<Double> val);
+
 		RValue<Float> rcpss(RValue<Float> val);
 		RValue<Float> sqrtss(RValue<Float> val);
 		RValue<Float> rsqrtss(RValue<Float> val);
@@ -33,13 +35,27 @@ namespace sw
 		RValue<Float4> maxps(RValue<Float4> x, RValue<Float4> y);
 		RValue<Float4> minps(RValue<Float4> x, RValue<Float4> y);
 
+        //RValue<Double4> rcppd(RValue<Double4> val); // Not supported in x86 instructions set
+        RValue<Double4> sqrtpd(RValue<Double4> val);
+        //RValue<Double4> rsqrtpd(RValue<Double4> val); // Not supported in x86 instructions set
+        RValue<Double4> maxpd(RValue<Double4> x, RValue<Double4> y);
+        RValue<Double4> minpd(RValue<Double4> x, RValue<Double4> y);
+
 		RValue<Float> roundss(RValue<Float> val, unsigned char imm);
 		RValue<Float> floorss(RValue<Float> val);
 		RValue<Float> ceilss(RValue<Float> val);
 
+        RValue<Double> roundsd(RValue<Double> val, unsigned char imm);
+        RValue<Double> floorsd(RValue<Double> val);
+        RValue<Double> ceilsd(RValue<Double> val);
+
 		RValue<Float4> roundps(RValue<Float4> val, unsigned char imm);
 		RValue<Float4> floorps(RValue<Float4> val);
 		RValue<Float4> ceilps(RValue<Float4> val);
+
+        RValue<Double4> roundpd(RValue<Double4> val, unsigned char imm);
+        RValue<Double4> floorpd(RValue<Double4> val);
+        RValue<Double4> ceilpd(RValue<Double4> val);
 
 		RValue<Float4> cmpps(RValue<Float4> x, RValue<Float4> y, unsigned char imm);
 		RValue<Float4> cmpeqps(RValue<Float4> x, RValue<Float4> y);

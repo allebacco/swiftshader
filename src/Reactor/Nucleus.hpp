@@ -1643,6 +1643,7 @@ namespace sw
 	{
 	public:
 		explicit Int4(RValue<Float4> cast);
+        explicit Int4(RValue<Double4> cast);
 		explicit Int4(RValue<Short4> cast);
 		explicit Int4(RValue<UShort4> cast);
 
@@ -2533,12 +2534,12 @@ namespace sw
     class Double4 : public Variable<Double4>
     {
     public:
-        /*explicit Double4(RValue<Byte4> cast);
-        explicit Double4(RValue<SByte4> cast);
-        explicit Double4(RValue<Short4> cast);
-        explicit Double4(RValue<UShort4> cast);
+        //explicit Double4(RValue<Byte4> cast);
+        //explicit Double4(RValue<SByte4> cast);
+        //explicit Double4(RValue<Short4> cast);
+        //explicit Double4(RValue<UShort4> cast);
         explicit Double4(RValue<Int4> cast);
-        explicit Double4(RValue<UInt4> cast);*/
+        //explicit Double4(RValue<UInt4> cast);
 
         Double4();
         Double4(double xyzw);
@@ -2552,20 +2553,18 @@ namespace sw
         Double4(const Double &rhs);
         Double4(const Reference<Double> &rhs);
 
-        /*
         template<int T>
-        Float4(const SwizzleMask1Float4<T> &rhs);
+        Double4(const SwizzleMask1Double4<T> &rhs);
         template<int T>
-        Float4(const SwizzleFloat4<T> &rhs);
+        Double4(const SwizzleDouble4<T> &rhs);
         template<int X, int Y>
-        Float4(const Swizzle2Float4<X> &x, const Swizzle2Float4<Y> &y);
+        Double4(const Swizzle2Double4<X> &x, const Swizzle2Double4<Y> &y);
         template<int X, int Y>
-        Float4(const SwizzleMask2Float4<X> &x, const Swizzle2Float4<Y> &y);
+        Double4(const SwizzleMask2Double4<X> &x, const Swizzle2Double4<Y> &y);
         template<int X, int Y>
-        Float4(const Swizzle2Float4<X> &x, const SwizzleMask2Float4<Y> &y);
+        Double4(const Swizzle2Double4<X> &x, const SwizzleMask2Double4<Y> &y);
         template<int X, int Y>
-        Float4(const SwizzleMask2Float4<X> &x, const SwizzleMask2Float4<Y> &y);
-        */
+        Double4(const SwizzleMask2Double4<X> &x, const SwizzleMask2Double4<Y> &y);
 
         RValue<Double4> operator=(double replicate) const;
         RValue<Double4> operator=(RValue<Double4> rhs) const;
@@ -2575,12 +2574,10 @@ namespace sw
         RValue<Double4> operator=(const Double &rhs) const;
         RValue<Double4> operator=(const Reference<Double> &rhs) const;
 
-        /*
         template<int T>
-        RValue<Float4> operator=(const SwizzleMask1Float4<T> &rhs);
+        RValue<Double4> operator=(const SwizzleMask1Double4<T> &rhs);
         template<int T>
-        RValue<Float4> operator=(const SwizzleFloat4<T> &rhs);
-        */
+        RValue<Double4> operator=(const SwizzleDouble4<T> &rhs);
 
         static llvm::Type *getType();
 
@@ -2932,44 +2929,45 @@ namespace sw
         void constant(double x, double y, double z, double w);
     };
 
-    //RValue<Double4> operator+(RValue<Double4> lhs, RValue<Double4> rhs);
-    //RValue<Double4> operator-(RValue<Double4> lhs, RValue<Double4> rhs);
-    //RValue<Double4> operator*(RValue<Double4> lhs, RValue<Double4> rhs);
-    //RValue<Double4> operator/(RValue<Double4> lhs, RValue<Double4> rhs);
-    //RValue<Double4> operator%(RValue<Double4> lhs, RValue<Double4> rhs);
-    //RValue<Double4> operator+=(const Double4 &lhs, RValue<Double4> rhs);
-    //RValue<Double4> operator-=(const Double4 &lhs, RValue<Double4> rhs);
-    //RValue<Double4> operator*=(const Double4 &lhs, RValue<Double4> rhs);
-    //RValue<Double4> operator/=(const Double4 &lhs, RValue<Double4> rhs);
-    //RValue<Double4> operator%=(const Double4 &lhs, RValue<Double4> rhs);
-    //RValue<Double4> operator+(RValue<Double4> val);
-    //RValue<Double4> operator-(RValue<Double4> val);
+    RValue<Double4> operator+(RValue<Double4> lhs, RValue<Double4> rhs);
+    RValue<Double4> operator-(RValue<Double4> lhs, RValue<Double4> rhs);
+    RValue<Double4> operator*(RValue<Double4> lhs, RValue<Double4> rhs);
+    RValue<Double4> operator/(RValue<Double4> lhs, RValue<Double4> rhs);
+    RValue<Double4> operator%(RValue<Double4> lhs, RValue<Double4> rhs);
+    RValue<Double4> operator+=(const Double4 &lhs, RValue<Double4> rhs);
+    RValue<Double4> operator-=(const Double4 &lhs, RValue<Double4> rhs);
+    RValue<Double4> operator*=(const Double4 &lhs, RValue<Double4> rhs);
+    RValue<Double4> operator/=(const Double4 &lhs, RValue<Double4> rhs);
+    RValue<Double4> operator%=(const Double4 &lhs, RValue<Double4> rhs);
+    RValue<Double4> operator+(RValue<Double4> val);
+    RValue<Double4> operator-(RValue<Double4> val);
 
     //RValue<Double4> Abs(RValue<Double4> x);
-    //RValue<Double4> Max(RValue<Double4> x, RValue<Double4> y);
-    //RValue<Double4> Min(RValue<Double4> x, RValue<Double4> y);
+    RValue<Double4> Max(RValue<Double4> x, RValue<Double4> y);
+    RValue<Double4> Min(RValue<Double4> x, RValue<Double4> y);
     //RValue<Double4> Rcp_pp(RValue<Double4> val, bool exactAtPow2 = false);
     //RValue<Double4> RcpSqrt_pp(RValue<Double4> val);
-    //RValue<Double4> Sqrt(RValue<Double4> x);
+    RValue<Double4> Sqrt(RValue<Double4> x);
     RValue<Double4> Insert(const Double4 &val, RValue<Double> element, int i);
     RValue<Double> Extract(RValue<Double4> x, int i);
-    //RValue<Double4> Swizzle(RValue<Double4> x, unsigned char select);
-    //RValue<Double4> ShuffleLowHigh(RValue<Double4> x, RValue<Double4> y, unsigned char imm);
-    //RValue<Double4> UnpackLow(RValue<Double4> x, RValue<Double4> y);
-    //RValue<Double4> UnpackHigh(RValue<Double4> x, RValue<Double4> y);
+    RValue<Double4> Swizzle(RValue<Double4> x, unsigned char select);
+    RValue<Double4> ShuffleLowHigh(RValue<Double4> x, RValue<Double4> y, unsigned char imm);
+    RValue<Double4> UnpackLow(RValue<Double4> x, RValue<Double4> y);
+    RValue<Double4> UnpackHigh(RValue<Double4> x, RValue<Double4> y);
     RValue<Double4> Mask(Double4 &lhs, RValue<Double4> rhs, unsigned char select);
     //RValue<Int> SignMask(RValue<Double4> x);
-    //RValue<Int4> CmpEQ(RValue<Double4> x, RValue<Double4> y);
-    //RValue<Int4> CmpLT(RValue<Double4> x, RValue<Double4> y);
-    //RValue<Int4> CmpLE(RValue<Double4> x, RValue<Double4> y);
-    //RValue<Int4> CmpNEQ(RValue<Double4> x, RValue<Double4> y);
-    //RValue<Int4> CmpNLT(RValue<Double4> x, RValue<Double4> y);
-    //RValue<Int4> CmpNLE(RValue<Double4> x, RValue<Double4> y);
-    //RValue<Double4> Round(RValue<Double4> x);
-    //RValue<Double4> Trunc(RValue<Double4> x);
-    //RValue<Double4> Frac(RValue<Double4> x);
-    //RValue<Double4> Floor(RValue<Double4> x);
-    //RValue<Double4> Ceil(RValue<Double4> x);
+    RValue<Int4> CmpEQ(RValue<Double4> x, RValue<Double4> y);
+    RValue<Int4> CmpLT(RValue<Double4> x, RValue<Double4> y);
+    RValue<Int4> CmpLE(RValue<Double4> x, RValue<Double4> y);
+    RValue<Int4> CmpNEQ(RValue<Double4> x, RValue<Double4> y);
+    RValue<Int4> CmpNLT(RValue<Double4> x, RValue<Double4> y);
+    RValue<Int4> CmpNLE(RValue<Double4> x, RValue<Double4> y);
+    RValue<Double4> Round(RValue<Double4> x);
+    RValue<Double4> Trunc(RValue<Double4> x);
+    RValue<Double4> Frac(RValue<Double4> x);
+    RValue<Double4> Floor(RValue<Double4> x);
+    RValue<Double4> Ceil(RValue<Double4> x);
+    RValue<Int4> RoundInt(RValue<Double4> cast);
 
 	template<class T>
 	class Pointer : public Variable<Pointer<T>>
@@ -3437,6 +3435,80 @@ namespace sw
     RValue<Double4> SwizzleMask2Double4<T>::operator=(RValue<Double4> rhs) const
     {
         return Mask(*parent, Double4(rhs), T);
+    }
+
+    /*
+    template<int T>
+    Float::Float(const SwizzleMask1Float4<T> &rhs)
+    {
+        *this = rhs.operator RValue<Float>();
+    }
+
+    template<int T>
+    RValue<Float> Float::operator=(const SwizzleMask1Float4<T> &rhs) const
+    {
+        return *this = rhs.operator RValue<Float>();
+    }
+    */
+
+    template<int T>
+    Double4::Double4(const SwizzleMask1Double4<T> &rhs)
+    {
+        xyzw.parent = this;
+
+        *this = rhs.operator RValue<Double4>();
+    }
+
+    template<int T>
+    Double4::Double4(const SwizzleDouble4<T> &rhs)
+    {
+        xyzw.parent = this;
+
+        *this = rhs.operator RValue<Double4>();
+    }
+
+    template<int X, int Y>
+    Double4::Double4(const Swizzle2Double4<X> &x, const Swizzle2Double4<Y> &y)
+    {
+        xyzw.parent = this;
+
+        *this = ShuffleLowHigh(*x.parent, *y.parent, (X & 0xF) | (Y & 0xF) << 4);
+    }
+
+    template<int X, int Y>
+    Double4::Double4(const SwizzleMask2Double4<X> &x, const Swizzle2Double4<Y> &y)
+    {
+        xyzw.parent = this;
+
+        *this = ShuffleLowHigh(*x.parent, *y.parent, (X & 0xF) | (Y & 0xF) << 4);
+    }
+
+    template<int X, int Y>
+    Double4::Double4(const Swizzle2Double4<X> &x, const SwizzleMask2Double4<Y> &y)
+    {
+        xyzw.parent = this;
+
+        *this = ShuffleLowHigh(*x.parent, *y.parent, (X & 0xF) | (Y & 0xF) << 4);
+    }
+
+    template<int X, int Y>
+    Double4::Double4(const SwizzleMask2Double4<X> &x, const SwizzleMask2Double4<Y> &y)
+    {
+        xyzw.parent = this;
+
+        *this = ShuffleLowHigh(*x.parent, *y.parent, (X & 0xF) | (Y & 0xF) << 4);
+    }
+
+    template<int T>
+    RValue<Double4> Double4::operator=(const SwizzleMask1Double4<T> &rhs)
+    {
+        return *this = rhs.operator RValue<Double4>();
+    }
+
+    template<int T>
+    RValue<Double4> Double4::operator=(const SwizzleDouble4<T> &rhs)
+    {
+        return *this = rhs.operator RValue<Double4>();
     }
 
 	template<class T>

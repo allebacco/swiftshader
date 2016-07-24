@@ -5245,6 +5245,15 @@ namespace sw
 		storeValue(xyzw);
 	}
 
+    Int4::Int4(RValue<Double4> cast)
+    {
+    //	xyzw.parent = this;
+
+        Value *xyzw = Nucleus::createFPToSI(cast.value, Int4::getType());
+
+        storeValue(xyzw);
+    }
+
 	Int4::Int4(RValue<Short4> cast)
 	{
 		Value *long2 = UndefValue::get(Long2::getType());
@@ -5627,6 +5636,17 @@ namespace sw
 	{
 		return x86::cvtps2dq(cast);
 	}
+
+    RValue<Int4> RoundInt(RValue<Double4> cast)
+    {
+        Double4 dval(cast);
+        Int4 val;
+        Insert(val, x86::cvtsd2si(dval.x), 0);
+        Insert(val, x86::cvtsd2si(dval.y), 1);
+        Insert(val, x86::cvtsd2si(dval.z), 2);
+        Insert(val, x86::cvtsd2si(dval.w), 3);
+        return val;
+    }
 
 	RValue<Short8> Pack(RValue<Int4> x, RValue<Int4> y)
 	{
@@ -7099,183 +7119,6 @@ namespace sw
         }
     }*/
 
-    /*
-    Float4::Float4(RValue<Byte4> cast)
-    {
-        xyzw.parent = this;
-
-        #if 0
-            Value *xyzw = Nucleus::createUIToFP(cast.value, Float4::getType());   // FIXME: Crashes
-        #elif 0
-            Value *vector = loadValue();
-
-            Value *i8x = Nucleus::createExtractElement(cast.value, 0);
-            Value *f32x = Nucleus::createUIToFP(i8x, Float::getType());
-            Value *x = Nucleus::createInsertElement(vector, f32x, 0);
-
-            Value *i8y = Nucleus::createExtractElement(cast.value, Nucleus::createConstantInt(1));
-            Value *f32y = Nucleus::createUIToFP(i8y, Float::getType());
-            Value *xy = Nucleus::createInsertElement(x, f32y, Nucleus::createConstantInt(1));
-
-            Value *i8z = Nucleus::createExtractElement(cast.value, Nucleus::createConstantInt(2));
-            Value *f32z = Nucleus::createUIToFP(i8z, Float::getType());
-            Value *xyz = Nucleus::createInsertElement(xy, f32z, Nucleus::createConstantInt(2));
-
-            Value *i8w = Nucleus::createExtractElement(cast.value, Nucleus::createConstantInt(3));
-            Value *f32w = Nucleus::createUIToFP(i8w, Float::getType());
-            Value *xyzw = Nucleus::createInsertElement(xyz, f32w, Nucleus::createConstantInt(3));
-        #else
-            Value *x = Nucleus::createBitCast(cast.value, Int::getType());
-            Value *a = Nucleus::createInsertElement(UndefValue::get(Int4::getType()), x, 0);
-
-            Value *e;
-
-            if(CPUID::supportsSSE4_1())
-            {
-                e = x86::pmovzxbd(RValue<Int4>(a)).value;
-            }
-            else
-            {
-                Constant *swizzle[16];
-                swizzle[0] = Nucleus::createConstantInt(0);
-                swizzle[1] = Nucleus::createConstantInt(16);
-                swizzle[2] = Nucleus::createConstantInt(1);
-                swizzle[3] = Nucleus::createConstantInt(17);
-                swizzle[4] = Nucleus::createConstantInt(2);
-                swizzle[5] = Nucleus::createConstantInt(18);
-                swizzle[6] = Nucleus::createConstantInt(3);
-                swizzle[7] = Nucleus::createConstantInt(19);
-                swizzle[8] = Nucleus::createConstantInt(4);
-                swizzle[9] = Nucleus::createConstantInt(20);
-                swizzle[10] = Nucleus::createConstantInt(5);
-                swizzle[11] = Nucleus::createConstantInt(21);
-                swizzle[12] = Nucleus::createConstantInt(6);
-                swizzle[13] = Nucleus::createConstantInt(22);
-                swizzle[14] = Nucleus::createConstantInt(7);
-                swizzle[15] = Nucleus::createConstantInt(23);
-
-                Value *b = Nucleus::createBitCast(a, Byte16::getType());
-                Value *c = Nucleus::createShuffleVector(b, Nucleus::createNullValue(Byte16::getType()), Nucleus::createConstantVector(swizzle, 16));
-
-                Constant *swizzle2[8];
-                swizzle2[0] = Nucleus::createConstantInt(0);
-                swizzle2[1] = Nucleus::createConstantInt(8);
-                swizzle2[2] = Nucleus::createConstantInt(1);
-                swizzle2[3] = Nucleus::createConstantInt(9);
-                swizzle2[4] = Nucleus::createConstantInt(2);
-                swizzle2[5] = Nucleus::createConstantInt(10);
-                swizzle2[6] = Nucleus::createConstantInt(3);
-                swizzle2[7] = Nucleus::createConstantInt(11);
-
-                Value *d = Nucleus::createBitCast(c, Short8::getType());
-                e = Nucleus::createShuffleVector(d, Nucleus::createNullValue(Short8::getType()), Nucleus::createConstantVector(swizzle2, 8));
-            }
-
-            Value *f = Nucleus::createBitCast(e, Int4::getType());
-            Value *g = Nucleus::createSIToFP(f, Float4::getType());
-            Value *xyzw = g;
-        #endif
-
-        storeValue(xyzw);
-    }
-
-    Double4::Double4(RValue<SByte4> cast)
-    {
-        xyzw.parent = this;
-
-        #if 0
-            Value *xyzw = Nucleus::createSIToFP(cast.value, Float4::getType());   // FIXME: Crashes
-        #elif 0
-            Value *vector = loadValue();
-
-            Value *i8x = Nucleus::createExtractElement(cast.value, 0);
-            Value *f32x = Nucleus::createSIToFP(i8x, Float::getType());
-            Value *x = Nucleus::createInsertElement(vector, f32x, 0);
-
-            Value *i8y = Nucleus::createExtractElement(cast.value, Nucleus::createConstantInt(1));
-            Value *f32y = Nucleus::createSIToFP(i8y, Float::getType());
-            Value *xy = Nucleus::createInsertElement(x, f32y, Nucleus::createConstantInt(1));
-
-            Value *i8z = Nucleus::createExtractElement(cast.value, Nucleus::createConstantInt(2));
-            Value *f32z = Nucleus::createSIToFP(i8z, Float::getType());
-            Value *xyz = Nucleus::createInsertElement(xy, f32z, Nucleus::createConstantInt(2));
-
-            Value *i8w = Nucleus::createExtractElement(cast.value, Nucleus::createConstantInt(3));
-            Value *f32w = Nucleus::createSIToFP(i8w, Float::getType());
-            Value *xyzw = Nucleus::createInsertElement(xyz, f32w, Nucleus::createConstantInt(3));
-        #else
-            Value *x = Nucleus::createBitCast(cast.value, Int::getType());
-            Value *a = Nucleus::createInsertElement(UndefValue::get(Int4::getType()), x, 0);
-
-            Value *g;
-
-            if(CPUID::supportsSSE4_1())
-            {
-                g = x86::pmovsxbd(RValue<Int4>(a)).value;
-            }
-            else
-            {
-                Constant *swizzle[16];
-                swizzle[0] = Nucleus::createConstantInt(0);
-                swizzle[1] = Nucleus::createConstantInt(0);
-                swizzle[2] = Nucleus::createConstantInt(1);
-                swizzle[3] = Nucleus::createConstantInt(1);
-                swizzle[4] = Nucleus::createConstantInt(2);
-                swizzle[5] = Nucleus::createConstantInt(2);
-                swizzle[6] = Nucleus::createConstantInt(3);
-                swizzle[7] = Nucleus::createConstantInt(3);
-                swizzle[8] = Nucleus::createConstantInt(4);
-                swizzle[9] = Nucleus::createConstantInt(4);
-                swizzle[10] = Nucleus::createConstantInt(5);
-                swizzle[11] = Nucleus::createConstantInt(5);
-                swizzle[12] = Nucleus::createConstantInt(6);
-                swizzle[13] = Nucleus::createConstantInt(6);
-                swizzle[14] = Nucleus::createConstantInt(7);
-                swizzle[15] = Nucleus::createConstantInt(7);
-
-                Value *b = Nucleus::createBitCast(a, Byte16::getType());
-                Value *c = Nucleus::createShuffleVector(b, b, Nucleus::createConstantVector(swizzle, 16));
-
-                Constant *swizzle2[8];
-                swizzle2[0] = Nucleus::createConstantInt(0);
-                swizzle2[1] = Nucleus::createConstantInt(0);
-                swizzle2[2] = Nucleus::createConstantInt(1);
-                swizzle2[3] = Nucleus::createConstantInt(1);
-                swizzle2[4] = Nucleus::createConstantInt(2);
-                swizzle2[5] = Nucleus::createConstantInt(2);
-                swizzle2[6] = Nucleus::createConstantInt(3);
-                swizzle2[7] = Nucleus::createConstantInt(3);
-
-                Value *d = Nucleus::createBitCast(c, Short8::getType());
-                Value *e = Nucleus::createShuffleVector(d, d, Nucleus::createConstantVector(swizzle2, 8));
-
-                Value *f = Nucleus::createBitCast(e, Int4::getType());
-            //	g = Nucleus::createAShr(f, Nucleus::createConstantInt(24));
-                g = x86::psrad(RValue<Int4>(f), 24).value;
-            }
-
-            Value *xyzw = Nucleus::createSIToFP(g, Float4::getType());
-        #endif
-
-        storeValue(xyzw);
-    }
-
-    Double4::Double4(RValue<Short4> cast)
-    {
-        xyzw.parent = this;
-
-        Int4 c(cast);
-        storeValue(Nucleus::createSIToFP(RValue<Int4>(c).value, Double4::getType()));
-    }
-
-    Double4::Double4(RValue<UShort4> cast)
-    {
-        xyzw.parent = this;
-
-        Int4 c(cast);
-        storeValue(Nucleus::createSIToFP(RValue<Int4>(c).value, Double4::getType()));
-    }
-
     Double4::Double4(RValue<Int4> cast)
     {
         xyzw.parent = this;
@@ -7284,15 +7127,6 @@ namespace sw
 
         storeValue(xyzw);
     }
-
-    Double4::Double4(RValue<UInt4> cast)
-    {
-        xyzw.parent = this;
-
-        Value *xyzw = Nucleus::createUIToFP(cast.value, Double4::getType());
-
-        storeValue(xyzw);
-    }*/
 
     Double4::Double4()
     {
@@ -7324,10 +7158,10 @@ namespace sw
         xyzw.parent = this;
 
         Constant *constantVector[4];
-        constantVector[0] = Nucleus::createConstantFloat(x);
-        constantVector[1] = Nucleus::createConstantFloat(y);
-        constantVector[2] = Nucleus::createConstantFloat(z);
-        constantVector[3] = Nucleus::createConstantFloat(w);
+        constantVector[0] = Nucleus::createConstantDouble(x);
+        constantVector[1] = Nucleus::createConstantDouble(y);
+        constantVector[2] = Nucleus::createConstantDouble(z);
+        constantVector[3] = Nucleus::createConstantDouble(w);
 
         storeValue(Nucleus::createConstantVector(constantVector, 4));
     }
@@ -7430,69 +7264,68 @@ namespace sw
     {
         return *this = Double4(rhs);
     }
-/*
-    RValue<Float4> operator+(RValue<Float4> lhs, RValue<Float4> rhs)
+
+    RValue<Double4> operator+(RValue<Double4> lhs, RValue<Double4> rhs)
     {
-        return RValue<Float4>(Nucleus::createFAdd(lhs.value, rhs.value));
+        return RValue<Double4>(Nucleus::createFAdd(lhs.value, rhs.value));
     }
 
-    RValue<Float4> operator-(RValue<Float4> lhs, RValue<Float4> rhs)
+    RValue<Double4> operator-(RValue<Double4> lhs, RValue<Double4> rhs)
     {
-        return RValue<Float4>(Nucleus::createFSub(lhs.value, rhs.value));
+        return RValue<Double4>(Nucleus::createFSub(lhs.value, rhs.value));
     }
 
-    RValue<Float4> operator*(RValue<Float4> lhs, RValue<Float4> rhs)
+    RValue<Double4> operator*(RValue<Double4> lhs, RValue<Double4> rhs)
     {
-        return RValue<Float4>(Nucleus::createFMul(lhs.value, rhs.value));
+        return RValue<Double4>(Nucleus::createFMul(lhs.value, rhs.value));
     }
 
-    RValue<Float4> operator/(RValue<Float4> lhs, RValue<Float4> rhs)
+    RValue<Double4> operator/(RValue<Double4> lhs, RValue<Double4> rhs)
     {
-        return RValue<Float4>(Nucleus::createFDiv(lhs.value, rhs.value));
+        return RValue<Double4>(Nucleus::createFDiv(lhs.value, rhs.value));
     }
 
-    RValue<Float4> operator%(RValue<Float4> lhs, RValue<Float4> rhs)
+    RValue<Double4> operator%(RValue<Double4> lhs, RValue<Double4> rhs)
     {
-        return RValue<Float4>(Nucleus::createFRem(lhs.value, rhs.value));
+        return RValue<Double4>(Nucleus::createFRem(lhs.value, rhs.value));
     }
 
-    RValue<Float4> operator+=(const Float4 &lhs, RValue<Float4> rhs)
+    RValue<Double4> operator+=(const Double4 &lhs, RValue<Double4> rhs)
     {
         return lhs = lhs + rhs;
     }
 
-    RValue<Float4> operator-=(const Float4 &lhs, RValue<Float4> rhs)
+    RValue<Double4> operator-=(const Double4 &lhs, RValue<Double4> rhs)
     {
         return lhs = lhs - rhs;
     }
 
-    RValue<Float4> operator*=(const Float4 &lhs, RValue<Float4> rhs)
+    RValue<Double4> operator*=(const Double4 &lhs, RValue<Double4> rhs)
     {
         return lhs = lhs * rhs;
     }
 
-    RValue<Float4> operator/=(const Float4 &lhs, RValue<Float4> rhs)
+    RValue<Double4> operator/=(const Double4 &lhs, RValue<Double4> rhs)
     {
         return lhs = lhs / rhs;
     }
 
-    RValue<Float4> operator%=(const Float4 &lhs, RValue<Float4> rhs)
+    RValue<Double4> operator%=(const Double4 &lhs, RValue<Double4> rhs)
     {
         return lhs = lhs % rhs;
     }
 
-    RValue<Float4> operator+(RValue<Float4> val)
+    RValue<Double4> operator+(RValue<Double4> val)
     {
         return val;
     }
 
-    RValue<Float4> operator-(RValue<Float4> val)
+    RValue<Double4> operator-(RValue<Double4> val)
     {
-        return RValue<Float4>(Nucleus::createFNeg(val.value));
+        return RValue<Double4>(Nucleus::createFNeg(val.value));
     }
-    */
-    /*
-    RValue<Float4> Abs(RValue<Float4> x)
+
+    /*RValue<Double4> Abs(RValue<Double4> x)
     {
         Value *vector = Nucleus::createBitCast(x.value, Int4::getType());
 
@@ -7504,42 +7337,23 @@ namespace sw
 
         Value *result = Nucleus::createAnd(vector, Nucleus::createConstantVector(constantVector, 4));
 
-        return RValue<Float4>(Nucleus::createBitCast(result, Float4::getType()));
-    }
-
-    RValue<Float4> Max(RValue<Float4> x, RValue<Float4> y)
-    {
-        return x86::maxps(x, y);
-    }
-
-    RValue<Float4> Min(RValue<Float4> x, RValue<Float4> y)
-    {
-        return x86::minps(x, y);
-    }
-
-    RValue<Float4> Rcp_pp(RValue<Float4> x, bool exactAtPow2)
-    {
-        if(exactAtPow2)
-        {
-            // rcpps uses a piecewise-linear approximation which minimizes the relative error
-            // but is not exact at power-of-two values. Rectify by multiplying by the inverse.
-            return x86::rcpps(x) * Float4(1.0f / _mm_cvtss_f32(_mm_rcp_ss(_mm_set_ps1(1.0f))));
-        }
-        else
-        {
-            return x86::rcpps(x);
-        }
-    }
-
-    RValue<Float4> RcpSqrt_pp(RValue<Float4> x)
-    {
-        return x86::rsqrtps(x);
-    }
-
-    RValue<Float4> Sqrt(RValue<Float4> x)
-    {
-        return x86::sqrtps(x);
+        return RValue<Double4>(Nucleus::createBitCast(result, Double4::getType()));
     }*/
+
+    RValue<Double4> Max(RValue<Double4> x, RValue<Double4> y)
+    {
+        return x86::maxpd(x, y);
+    }
+
+    RValue<Double4> Min(RValue<Double4> x, RValue<Double4> y)
+    {
+        return x86::minpd(x, y);
+    }
+
+    RValue<Double4> Sqrt(RValue<Double4> x)
+    {
+        return x86::sqrtpd(x);
+    }
 
     RValue<Double4> Insert(const Double4 &val, RValue<Double> element, int i)
     {
@@ -7555,13 +7369,13 @@ namespace sw
     {
         return RValue<Double>(Nucleus::createExtractElement(x.value, i));
     }
-/*
-    RValue<Float4> Swizzle(RValue<Float4> x, unsigned char select)
+
+    RValue<Double4> Swizzle(RValue<Double4> x, unsigned char select)
     {
-        return RValue<Float4>(Nucleus::createSwizzle(x.value, select));
+        return RValue<Double4>(Nucleus::createSwizzle(x.value, select));
     }
 
-    RValue<Float4> ShuffleLowHigh(RValue<Float4> x, RValue<Float4> y, unsigned char imm)
+    RValue<Double4> ShuffleLowHigh(RValue<Double4> x, RValue<Double4> y, unsigned char imm)
     {
         Constant *shuffle[4];
         shuffle[0] = Nucleus::createConstantInt(((imm >> 0) & 0x03) + 0);
@@ -7569,10 +7383,10 @@ namespace sw
         shuffle[2] = Nucleus::createConstantInt(((imm >> 4) & 0x03) + 4);
         shuffle[3] = Nucleus::createConstantInt(((imm >> 6) & 0x03) + 4);
 
-        return RValue<Float4>(Nucleus::createShuffleVector(x.value, y.value, Nucleus::createConstantVector(shuffle, 4)));
+        return RValue<Double4>(Nucleus::createShuffleVector(x.value, y.value, Nucleus::createConstantVector(shuffle, 4)));
     }
 
-    RValue<Float4> UnpackLow(RValue<Float4> x, RValue<Float4> y)
+    RValue<Double4> UnpackLow(RValue<Double4> x, RValue<Double4> y)
     {
         Constant *shuffle[4];
         shuffle[0] = Nucleus::createConstantInt(0);
@@ -7580,10 +7394,10 @@ namespace sw
         shuffle[2] = Nucleus::createConstantInt(1);
         shuffle[3] = Nucleus::createConstantInt(5);
 
-        return RValue<Float4>(Nucleus::createShuffleVector(x.value, y.value, Nucleus::createConstantVector(shuffle, 4)));
+        return RValue<Double4>(Nucleus::createShuffleVector(x.value, y.value, Nucleus::createConstantVector(shuffle, 4)));
     }
 
-    RValue<Float4> UnpackHigh(RValue<Float4> x, RValue<Float4> y)
+    RValue<Double4> UnpackHigh(RValue<Double4> x, RValue<Double4> y)
     {
         Constant *shuffle[4];
         shuffle[0] = Nucleus::createConstantInt(2);
@@ -7591,9 +7405,9 @@ namespace sw
         shuffle[2] = Nucleus::createConstantInt(3);
         shuffle[3] = Nucleus::createConstantInt(7);
 
-        return RValue<Float4>(Nucleus::createShuffleVector(x.value, y.value, Nucleus::createConstantVector(shuffle, 4)));
+        return RValue<Double4>(Nucleus::createShuffleVector(x.value, y.value, Nucleus::createConstantVector(shuffle, 4)));
     }
-*/
+
     RValue<Double4> Mask(Double4 &lhs, RValue<Double4> rhs, unsigned char select)
     {
         Value *vector = lhs.loadValue();
@@ -7607,86 +7421,86 @@ namespace sw
     {
         return x86::movmskps(x);
     }
-
-    RValue<Int4> CmpEQ(RValue<Float4> x, RValue<Float4> y)
+*/
+    RValue<Int4> CmpEQ(RValue<Double4> x, RValue<Double4> y)
     {
     //	return As<Int4>(x86::cmpeqps(x, y));
         return RValue<Int4>(Nucleus::createSExt(Nucleus::createFCmpOEQ(x.value, y.value), Int4::getType()));
     }
 
-    RValue<Int4> CmpLT(RValue<Float4> x, RValue<Float4> y)
+    RValue<Int4> CmpLT(RValue<Double4> x, RValue<Double4> y)
     {
     //	return As<Int4>(x86::cmpltps(x, y));
         return RValue<Int4>(Nucleus::createSExt(Nucleus::createFCmpOLT(x.value, y.value), Int4::getType()));
     }
 
-    RValue<Int4> CmpLE(RValue<Float4> x, RValue<Float4> y)
+    RValue<Int4> CmpLE(RValue<Double4> x, RValue<Double4> y)
     {
     //	return As<Int4>(x86::cmpleps(x, y));
         return RValue<Int4>(Nucleus::createSExt(Nucleus::createFCmpOLE(x.value, y.value), Int4::getType()));
     }
 
-    RValue<Int4> CmpNEQ(RValue<Float4> x, RValue<Float4> y)
+    RValue<Int4> CmpNEQ(RValue<Double4> x, RValue<Double4> y)
     {
     //	return As<Int4>(x86::cmpneqps(x, y));
         return RValue<Int4>(Nucleus::createSExt(Nucleus::createFCmpONE(x.value, y.value), Int4::getType()));
     }
 
-    RValue<Int4> CmpNLT(RValue<Float4> x, RValue<Float4> y)
+    RValue<Int4> CmpNLT(RValue<Double4> x, RValue<Double4> y)
     {
     //	return As<Int4>(x86::cmpnltps(x, y));
         return RValue<Int4>(Nucleus::createSExt(Nucleus::createFCmpOGE(x.value, y.value), Int4::getType()));
     }
 
-    RValue<Int4> CmpNLE(RValue<Float4> x, RValue<Float4> y)
+    RValue<Int4> CmpNLE(RValue<Double4> x, RValue<Double4> y)
     {
     //	return As<Int4>(x86::cmpnleps(x, y));
         return RValue<Int4>(Nucleus::createSExt(Nucleus::createFCmpOGT(x.value, y.value), Int4::getType()));
     }
 
-    RValue<Float4> Round(RValue<Float4> x)
+    RValue<Double4> Round(RValue<Double4> x)
     {
         if(CPUID::supportsSSE4_1())
         {
-            return x86::roundps(x, 0);
+            return x86::roundpd(x, 0);
         }
         else
         {
-            return Float4(RoundInt(x));
+            return Double4(RoundInt(x));
         }
     }
 
-    RValue<Float4> Trunc(RValue<Float4> x)
+    RValue<Double4> Trunc(RValue<Double4> x)
     {
         if(CPUID::supportsSSE4_1())
         {
-            return x86::roundps(x, 3);
+            return x86::roundpd(x, 3);
         }
         else
         {
-            return Float4(Int4(x));   // Rounded toward zero
+            return Double4(Int4(x));   // Rounded toward zero
         }
     }
 
-    RValue<Float4> Frac(RValue<Float4> x)
+    RValue<Double4> Frac(RValue<Double4> x)
     {
         if(CPUID::supportsSSE4_1())
         {
-            return x - x86::floorps(x);
+            return x - x86::floorpd(x);
         }
         else
         {
-            Float4 frc = x - Float4(Int4(x));   // Signed fractional part
+            Double4 frc = x - Double4(Int4(x));   // Signed fractional part
 
-            return frc + As<Float4>(As<Int4>(CmpNLE(Float4(0.0f), frc)) & As<Int4>(Float4(1, 1, 1, 1)));
+            return frc + As<Double4>(As<Int4>(CmpNLE(Double4(0.0), frc)) & As<Int4>(Double4(1, 1, 1, 1)));
         }
     }
 
-    RValue<Float4> Floor(RValue<Float4> x)
+    RValue<Double4> Floor(RValue<Double4> x)
     {
         if(CPUID::supportsSSE4_1())
         {
-            return x86::floorps(x);
+            return x86::floorpd(x);
         }
         else
         {
@@ -7694,17 +7508,17 @@ namespace sw
         }
     }
 
-    RValue<Float4> Ceil(RValue<Float4> x)
+    RValue<Double4> Ceil(RValue<Double4> x)
     {
         if(CPUID::supportsSSE4_1())
         {
-            return x86::ceilps(x);
+            return x86::ceilpd(x);
         }
         else
         {
             return -Floor(-x);
         }
-    }*/
+    }
 
     Type *Double4::getType()
     {
@@ -7866,7 +7680,7 @@ namespace sw
 			return RValue<Int2>(Nucleus::createCall(cvttps2pi, val.value));
 		}
 
-		RValue<Int4> cvtps2dq(RValue<Float4> val)
+        RValue<Int4> cvtps2dq(RValue<Float4> val)
 		{
 			if(CPUID::supportsSSE2())
 			{
@@ -7883,6 +7697,17 @@ namespace sw
 				return Int4(lo, hi);
 			}
 		}
+
+        RValue<Int> cvtsd2si(RValue<Double> val)
+        {
+            Module *module = Nucleus::getModule();
+            llvm::Function *cvtsd2si = Intrinsic::getDeclaration(module, Intrinsic::x86_sse2_cvtsd2si);
+
+            Double4 vector;
+            vector.x = val;
+
+            return RValue<Int>(Nucleus::createCall(cvtsd2si, RValue<Double4>(vector).value));
+        }
 
 		RValue<Float> rcpss(RValue<Float> val)
 		{
@@ -7954,6 +7779,30 @@ namespace sw
 			return RValue<Float4>(Nucleus::createCall(minps, x.value, y.value));
 		}
 
+        RValue<Double4> sqrtpd(RValue<Double4> val)
+        {
+            Module *module = Nucleus::getModule();
+            llvm::Function *sqrtpd = Intrinsic::getDeclaration(module, Intrinsic::x86_sse2_sqrt_pd);
+
+            return RValue<Double4>(Nucleus::createCall(sqrtpd, val.value));
+        }
+
+        RValue<Double4> maxpd(RValue<Double4> x, RValue<Double4> y)
+        {
+            Module *module = Nucleus::getModule();
+            llvm::Function *maxpd = Intrinsic::getDeclaration(module, Intrinsic::x86_sse2_max_pd);
+
+            return RValue<Double4>(Nucleus::createCall(maxpd, x.value, y.value));
+        }
+
+        RValue<Double4> minpd(RValue<Double4> x, RValue<Double4> y)
+        {
+            Module *module = Nucleus::getModule();
+            llvm::Function *minpd = Intrinsic::getDeclaration(module, Intrinsic::x86_sse2_min_pd);
+
+            return RValue<Double4>(Nucleus::createCall(minpd, x.value, y.value));
+        }
+
 		RValue<Float> roundss(RValue<Float> val, unsigned char imm)
 		{
 			Module *module = Nucleus::getModule();
@@ -7975,6 +7824,27 @@ namespace sw
 			return roundss(val, 2);
 		}
 
+        RValue<Double> roundsd(RValue<Double> val, unsigned char imm)
+        {
+            Module *module = Nucleus::getModule();
+            llvm::Function *roundsd = Intrinsic::getDeclaration(module, Intrinsic::x86_sse41_round_sd);
+
+            Value *undef = UndefValue::get(Double4::getType());
+            Value *vector = Nucleus::createInsertElement(undef, val.value, 0);
+
+            return RValue<Double>(Nucleus::createExtractElement(Nucleus::createCall(roundsd, undef, vector, Nucleus::createConstantInt(imm)), 0));
+        }
+
+        RValue<Double> floorsd(RValue<Double> val)
+        {
+            return roundsd(val, 1);
+        }
+
+        RValue<Double> ceilsd(RValue<Double> val)
+        {
+            return roundsd(val, 2);
+        }
+
 		RValue<Float4> roundps(RValue<Float4> val, unsigned char imm)
 		{
 			Module *module = Nucleus::getModule();
@@ -7992,6 +7862,24 @@ namespace sw
 		{
 			return roundps(val, 2);
 		}
+
+        RValue<Double4> roundpd(RValue<Double4> val, unsigned char imm)
+        {
+            Module *module = Nucleus::getModule();
+            llvm::Function *roundpd = Intrinsic::getDeclaration(module, Intrinsic::x86_sse41_round_pd);
+
+            return RValue<Double4>(Nucleus::createCall(roundpd, val.value, Nucleus::createConstantInt(imm)));
+        }
+
+        RValue<Double4> floorpd(RValue<Double4> val)
+        {
+            return roundpd(val, 1);
+        }
+
+        RValue<Double4> ceilpd(RValue<Double4> val)
+        {
+            return roundpd(val, 2);
+        }
 
 		RValue<Float4> cmpps(RValue<Float4> x, RValue<Float4> y, unsigned char imm)
 		{
